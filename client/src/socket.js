@@ -8,14 +8,24 @@ import { HostServer } from "./engine/HostServer.js";
 
 class FakeSocket {
   constructor() {
-    // Generate a permanent pseudo-socket ID for this browser tab
-    this.id = Math.random().toString(36).substring(2, 16);
+    // Generate a permanent pseudo-socket ID for this browser tab, or load existing
+    const storedId = sessionStorage.getItem("buggedOut_socketId");
+    if (storedId) {
+      this.id = storedId;
+    } else {
+      this.id = Math.random().toString(36).substring(2, 16);
+      sessionStorage.setItem("buggedOut_socketId", this.id);
+    }
+
     this.listeners = {};
 
     this.roomChannel = null;
     this.isHost = false;
     this.hostServer = null;
-    this.identity = null; // {username, color}
+
+    // Load existing identity to prevent logout on refresh
+    const storedIdentity = sessionStorage.getItem("buggedOut_identity");
+    this.identity = storedIdentity ? JSON.parse(storedIdentity) : null;
 
     // ─── LOBBY PRESENCE CHANNEL ──────────────────
     // Used exclusively to display available rooms to waiting players
@@ -88,6 +98,7 @@ class FakeSocket {
     // 1. Identity handling (local cache)
     if (event === "player:setIdentity") {
       this.identity = payload;
+      sessionStorage.setItem("buggedOut_identity", JSON.stringify(payload));
       this.trigger("identity:set", payload);
       return;
     }

@@ -33,7 +33,7 @@ export class HostServer {
 
         // Ensure gm uses our generated roomId
         result.room.id = this.roomId;
-        gm.setRoomIdOverride(result.room.name, this.roomId);
+        gm.setRoomIdOverride(result.room.id, this.roomId);
 
         this.io.serverEmitToRoom(this.roomId, "room:state", result.room);
         this.io.updateLobbyPresence(result.room);
@@ -92,9 +92,14 @@ export class HostServer {
         if (!result) return;
         if (result.error)
           return this.io.serverEmit(socketId, "error:message", result.error);
+
         this.io.serverEmitToRoom(this.roomId, "room:topicChanged", {
           topic: result.topic,
         });
+
+        // Broadcast topic change to lobby browser so waiting players see it
+        const room = gm.getRoom(this.roomId);
+        if (room) this.io.updateLobbyPresence(room);
         break;
       }
 

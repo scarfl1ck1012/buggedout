@@ -24,6 +24,12 @@ export default function App() {
 
   // ═══ SOCKET EVENT WIRING ═══════════════════
   useEffect(() => {
+    // Session restore
+    if (socket.identity) {
+      actions.setIdentity(socket.identity.username, socket.identity.color);
+      actions.setScreen("lobby");
+    }
+
     // Identity confirmation
     socket.on("identity:set", () => {
       actions.setScreen("lobby");
