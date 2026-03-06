@@ -534,6 +534,50 @@ export function handleSabotage(roomId, socketId, sabotageType) {
     };
   }
 
+  if (sabotageType === "zero_g") {
+    if (
+      now - (room.imposterZeroGSabotageTime || 0) <
+      SABOTAGE_TYPES.ZERO_G.cooldown
+    ) {
+      return { error: "Zero-G Injector on cooldown" };
+    }
+
+    room.imposterZeroGSabotageTime = now;
+    room.activeSabotage = {
+      type: "zero_g",
+      startedAt: now,
+      room: player.currentRoom,
+    };
+
+    // Auto-resolve after duration
+    room.timers.zeroG = setTimeout(() => {
+      room.timers.zeroG = null;
+      if (room.activeSabotage?.type === "zero_g") {
+        room.activeSabotage = null;
+      }
+    }, SABOTAGE_TYPES.ZERO_G.duration);
+
+    room.gameLog.push({
+      time: now,
+      type: "sabotage",
+      message: "⚠️ Zero-G Anomaly detected! Gravity protocols disabled.",
+      room: player.currentRoom,
+    });
+
+    room.chatHistory.push({
+      id: generateId("msg"),
+      type: "system",
+      text: "⚠️ Zero-G Anomaly! Gravity lost in the current sector!",
+      timestamp: now,
+    });
+
+    return {
+      roomId,
+      sabotage: room.activeSabotage,
+      chatMessage: room.chatHistory[room.chatHistory.length - 1],
+    };
+  }
+
   return { error: "Unknown sabotage type" };
 }
 
@@ -577,6 +621,11 @@ export function resolveSabotage(roomId, socketId) {
   if (room.activeSabotage.type === "silent" && room.timers.deployFreeze) {
     clearTimeout(room.timers.deployFreeze);
     room.timers.deployFreeze = null;
+  }
+
+  if (room.activeSabotage.type === "zero_g" && room.timers.zeroG) {
+    clearTimeout(room.timers.zeroG);
+    room.timers.zeroG = null;
   }
 
   room.activeSabotage = null;
@@ -1091,6 +1140,16 @@ export function getImposterAbilities(roomId, socketId) {
         0,
         SABOTAGE_TYPES.EMERGENCY.cooldown -
           (now - room.imposterLastSabotageTime),
+      ),
+    },
+    zero_g: {
+      ready:
+        now - (room.imposterZeroGSabotageTime || 0) >=
+        SABOTAGE_TYPES.ZERO_G.cooldown,
+      cooldownRemaining: Math.max(
+        0,
+        SABOTAGE_TYPES.ZERO_G.cooldown -
+          (now - (room.imposterZeroGSabotageTime || 0)),
       ),
     },
   };

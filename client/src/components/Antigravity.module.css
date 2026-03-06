@@ -1,0 +1,67 @@
+.zeroGravity {
+  position: fixed !important;
+  z-index: 9999;
+  pointer-events: auto;
+  box-shadow:
+    0 0 15px rgba(0, 255, 136, 0.4),
+    0 0 30px rgba(0, 255, 136, 0.2);
+  animation:
+    floatDrift var(--float-duration, 10s) infinite ease-in-out alternate,
+    glitchFlicker 2s infinite linear;
+  backdrop-filter: blur(2px);
+  will-change: transform, left, top;
+}
+
+.restoreSpring {
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+@keyframes floatDrift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(
+        calc(var(--drift-x1, 20px)),
+        calc(var(--drift-y1, -30px))
+      )
+      rotate(calc(var(--rot1, 5deg)));
+  }
+  66% {
+    transform: translate(
+        calc(var(--drift-x2, -15px)),
+        calc(var(--drift-y2, -60px))
+      )
+      rotate(calc(var(--rot2, -3deg)));
+  }
+  100% {
+    transform: translate(
+        calc(var(--drift-x3, 10px)),
+        calc(var(--drift-y3, -100px))
+      )
+      rotate(calc(var(--rot3, 8deg)));
+  }
+}
+
+@keyframes glitchFlicker {
+  0% {
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+  }
+  48% {
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 2px rgba(0, 255, 136, 0.8);
+  }
+  52% {
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+  }
+  98% {
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+  }
+}

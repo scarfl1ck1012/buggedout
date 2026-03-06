@@ -83,6 +83,7 @@ export default function TaskCard({ task, onSubmit, disabled = false }) {
         }}
       >
         <span
+          data-antigravity
           style={{
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: "0.75rem",
@@ -108,6 +109,7 @@ export default function TaskCard({ task, onSubmit, disabled = false }) {
 
       {/* Description */}
       <div
+        data-antigravity
         style={{
           padding: "8px 14px",
           fontFamily: "'JetBrains Mono', monospace",
@@ -119,7 +121,7 @@ export default function TaskCard({ task, onSubmit, disabled = false }) {
       </div>
 
       {/* Code */}
-      <div style={{ padding: "0 14px 10px" }}>
+      <div data-antigravity style={{ padding: "0 14px 10px" }}>
         <CodeBlock code={task.code} language={task.language || "python"} />
       </div>
 
@@ -135,6 +137,7 @@ export default function TaskCard({ task, onSubmit, disabled = false }) {
         {(task.options || []).map((opt, i) => (
           <button
             key={i}
+            data-antigravity
             onClick={() => !submitted && !isCompleted && setSelected(opt)}
             disabled={submitted || isCompleted}
             style={{
@@ -157,6 +160,7 @@ export default function TaskCard({ task, onSubmit, disabled = false }) {
       {/* Submit */}
       <div style={{ padding: "0 14px 12px" }}>
         <button
+          data-antigravity
           onClick={handleSubmit}
           disabled={!selected || submitted || isCompleted || disabled}
           className="btn btn-green"

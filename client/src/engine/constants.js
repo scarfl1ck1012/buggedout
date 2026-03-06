@@ -83,6 +83,15 @@ export const SABOTAGE_TYPES = {
     duration: GAME_CONFIG.CRITICAL_SABOTAGE_TIMER,
     isCritical: true,
   },
+  ZERO_G: {
+    id: "zero_g",
+    name: "Zero-G Injector",
+    description:
+      "Disables local gravity protocols on the target's machine, causing their UI to shatter and drift.",
+    cooldown: GAME_CONFIG.SABOTAGE_COOLDOWN,
+    duration: GAME_CONFIG.DISRUPTIVE_FREEZE_DURATION, // Same duration as silent sabotage
+    isCritical: false,
+  },
 };
 
 export const ROOM_STATUSES = {

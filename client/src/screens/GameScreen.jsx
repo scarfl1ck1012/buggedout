@@ -22,6 +22,7 @@ import PlayerChip from "../components/PlayerChip.jsx";
 import ChatPanel from "../components/ChatPanel.jsx";
 import CountdownTimer from "../components/CountdownTimer.jsx";
 import RoleReveal from "../components/RoleReveal.jsx";
+import { useAntigravity } from "../hooks/useAntigravity.js";
 
 const ROOM_ICONS = {
   "DSA Lab": "🖥️",
@@ -73,6 +74,10 @@ export default function GameScreen({
   const isImposter = role === "imposter";
   const playerList = Object.values(players || {});
   const alivePlayers = playerList.filter((p) => p.status === "alive");
+
+  useAntigravity(
+    activeSabotage?.type === "zero_g" && activeSabotage?.room === currentRoom,
+  );
 
   // Group tasks by room
   const tasksByRoom = useMemo(() => {
@@ -367,6 +372,18 @@ export default function GameScreen({
                   }}
                 >
                   ⚡ Silent Sabotage
+                </button>
+                <button
+                  onClick={() => onSabotage("zero_g")}
+                  className="btn btn-red"
+                  style={{
+                    fontSize: "0.6rem",
+                    padding: "6px 8px",
+                    width: "100%",
+                    textAlign: "left",
+                  }}
+                >
+                  🌌 Zero-G Injector
                 </button>
                 <div style={{ position: "relative" }}>
                   <button
