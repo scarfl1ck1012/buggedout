@@ -32,8 +32,9 @@ export class HostServer {
           return this.io.serverEmit(socketId, "error:message", result.error);
 
         // Ensure gm uses our generated roomId
+        const originalId = result.room.id;
         result.room.id = this.roomId;
-        gm.setRoomIdOverride(result.room.id, this.roomId);
+        gm.setRoomIdOverride(originalId, this.roomId);
 
         this.io.serverEmitToRoom(this.roomId, "room:state", result.room);
         this.io.updateLobbyPresence(result.room);
