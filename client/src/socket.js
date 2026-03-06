@@ -26,6 +26,7 @@ class FakeSocket {
     this.lobbyChannel
       .on("presence", { event: "sync" }, () => {
         const state = this.lobbyChannel.presenceState();
+        console.log("[LOBBY SYNC] Current presence state:", state);
         const roomsList = [];
         for (const key in state) {
           state[key].forEach((p) => {
@@ -34,10 +35,13 @@ class FakeSocket {
             }
           });
         }
+        console.log("[LOBBY SYNC] Derived roomsList:", roomsList);
         this.trigger("rooms:list", roomsList);
         this.trigger("connect"); // Emulate connect success
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log("[LOBBY SUBSCRIBE] Status:", status);
+      });
   }
 
   // ─── EVENT LISTENER REGISTRATION ─────────────
@@ -67,6 +71,7 @@ class FakeSocket {
   emit(event, payload = {}) {
     if (event === "rooms:list") {
       const state = this.lobbyChannel.presenceState();
+      console.log("[EMIT rooms:list] Current presence state:", state);
       const roomsList = [];
       for (const key in state) {
         state[key].forEach((p) => {
@@ -75,6 +80,7 @@ class FakeSocket {
           }
         });
       }
+      console.log("[EMIT rooms:list] Derived roomsList:", roomsList);
       this.trigger("rooms:list", roomsList);
       return;
     }
@@ -207,7 +213,7 @@ class FakeSocket {
 
   updateLobbyPresence(roomObj) {
     if (!this.isHost) return;
-    this.lobbyChannel.track({
+    const trackPayload = {
       isHost: true,
       roomInfo: {
         id: roomObj.id,
@@ -216,9 +222,18 @@ class FakeSocket {
         status: roomObj.status,
         playerCount: Object.keys(roomObj.players).length,
         topic: roomObj.topic || "DSA",
-        maxPlayers: roomObj.settings.maxPlayers,
+        maxPlayers: roomObj.maxPlayers || 6,
       },
-    });
+    };
+    console.log("[TRACK LOBBY PRESENCE] Sending payload:", trackPayload);
+    this.lobbyChannel
+      .track(trackPayload)
+      .then((res) => {
+        console.log("[TRACK LOBBY PRESENCE] Track response:", res);
+      })
+      .catch((err) => {
+        console.error("[TRACK LOBBY PRESENCE] Track error:", err);
+      });
   }
 
   removeLobbyPresence() {
