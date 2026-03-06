@@ -51,21 +51,24 @@ function gameReducer(state, action) {
         screen: "gameLobby",
       };
 
-    case "UPDATE_PLAYER_JOINED":
+    case "UPDATE_PLAYER_JOINED": {
+      const roomPlayers = state.room?.players || {};
+      const newRoomPlayers = {
+        ...roomPlayers,
+        [action.player.id]: action.player,
+      };
       return {
         ...state,
         players: { ...state.players, [action.player.id]: action.player },
         room: state.room
           ? {
               ...state.room,
-              players: {
-                ...state.room.players,
-                [action.player.id]: action.player,
-              },
-              playerCount: Object.keys(state.room.players || {}).length + 1,
+              players: newRoomPlayers,
+              playerCount: Object.keys(newRoomPlayers).length,
             }
           : state.room,
       };
+    }
 
     case "UPDATE_PLAYER_LEFT": {
       const newPlayers = { ...state.players };
@@ -158,8 +161,14 @@ function gameReducer(state, action) {
           t.id === action.taskId ? { ...t, completedBy: "you" } : t,
         );
         return { ...state, tasks: updatedTasks };
+      } else {
+        const updatedTasks = state.tasks.map((t) =>
+          t.id === action.taskId
+            ? { ...t, failedAttempts: (t.failedAttempts || 0) + 1 }
+            : t,
+        );
+        return { ...state, tasks: updatedTasks };
       }
-      return state;
     }
 
     case "DEPLOY_PROGRESS":

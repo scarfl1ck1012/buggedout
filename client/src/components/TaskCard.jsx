@@ -10,6 +10,17 @@ export default function TaskCard({ task, onSubmit, disabled = false }) {
   const [selected, setSelected] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState(null);
+  const [failedAttempts, setFailedAttempts] = useState(
+    task?.failedAttempts || 0,
+  );
+
+  useEffect(() => {
+    if (task && task.failedAttempts > failedAttempts) {
+      setSubmitted(false);
+      setFailedAttempts(task.failedAttempts);
+      setSelected(null);
+    }
+  }, [task?.failedAttempts, failedAttempts]);
 
   if (!task) return null;
 

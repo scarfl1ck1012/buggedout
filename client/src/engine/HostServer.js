@@ -306,13 +306,13 @@ export class HostServer {
           log: result.log,
         });
 
-        setTimeout(() => {
+        this.meetingTimeout1 = setTimeout(() => {
           gm.startVotePhase(this.roomId);
           this.io.serverEmitToRoom(this.roomId, "meeting:phaseChange", {
             phase: "voting",
           });
 
-          setTimeout(() => {
+          this.meetingTimeout2 = setTimeout(() => {
             const tallyResult = gm.tallyVotes(this.roomId);
             if (!tallyResult) return;
             this.io.serverEmitToRoom(this.roomId, "vote:results", tallyResult);
@@ -328,7 +328,7 @@ export class HostServer {
                 3000,
               );
             } else {
-              setTimeout(() => {
+              this.meetingTimeout3 = setTimeout(() => {
                 gm.endMeeting(this.roomId);
                 this.io.serverEmitToRoom(this.roomId, "meeting:ended");
               }, 4000);
@@ -348,6 +348,7 @@ export class HostServer {
         });
 
         if (result.allVoted) {
+          if (this.meetingTimeout2) clearTimeout(this.meetingTimeout2);
           const tallyResult = gm.tallyVotes(this.roomId);
           if (!tallyResult) return;
           this.io.serverEmitToRoom(this.roomId, "vote:results", tallyResult);
@@ -363,7 +364,7 @@ export class HostServer {
               3000,
             );
           } else {
-            setTimeout(() => {
+            this.meetingTimeout3 = setTimeout(() => {
               gm.endMeeting(this.roomId);
               this.io.serverEmitToRoom(this.roomId, "meeting:ended");
             }, 4000);

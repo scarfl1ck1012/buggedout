@@ -103,6 +103,7 @@ export default function App() {
         playSound("taskComplete");
       } else {
         playSound("taskFail");
+        actions.setError("Task failed: " + (data.message || "Wrong answer"));
       }
     });
 
