@@ -2,7 +2,7 @@
 // BuggedOut — TaskCard Component
 // ═══════════════════════════════════════════════
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import CodeBlock from "./CodeBlock.jsx";
 
