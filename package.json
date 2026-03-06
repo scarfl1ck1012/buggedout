@@ -1,0 +1,13 @@
+{
+  "name": "buggedout",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd client && npx vite",
+    "build": "cd client && npx vite build",
+    "start": "cd client && npx vite preview"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
