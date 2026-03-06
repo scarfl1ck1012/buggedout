@@ -3,18 +3,26 @@
 // ═══════════════════════════════════════════════
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function RoleReveal({ role, onComplete }) {
   const [visible, setVisible] = useState(true);
 
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
-      onComplete && onComplete();
+      if (onCompleteRef.current) {
+        onCompleteRef.current();
+      }
     }, 4000);
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, []);
 
   const isImposter = role === "imposter";
 

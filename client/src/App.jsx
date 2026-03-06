@@ -63,15 +63,20 @@ export default function App() {
       actions.topicChanged(topic);
     });
 
+    let countdownInterval = null;
+
     // Game countdown
     socket.on("game:countdown", ({ seconds }) => {
       actions.gameCountdown(seconds);
+      if (countdownInterval) clearInterval(countdownInterval);
+
       // Tick down
       let count = seconds;
-      const interval = setInterval(() => {
+      countdownInterval = setInterval(() => {
         count -= 1;
         if (count <= 0) {
-          clearInterval(interval);
+          clearInterval(countdownInterval);
+          countdownInterval = null;
           actions.gameCountdown(null);
         } else {
           actions.gameCountdown(count);
